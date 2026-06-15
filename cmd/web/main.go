@@ -1,8 +1,10 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
 	"os"
+	"time"
 )
 
 func main() {
@@ -11,9 +13,13 @@ func main() {
 	mux := http.NewServeMux()
 
 	serv := &http.Server{
-		Addr:    port,
-		Handler: mux,
+		Addr:              port,
+		Handler:           mux,
+		ReadHeaderTimeout: time.Duration(time.Duration.Seconds(5)),
 	}
 
-	serv.ListenAndServe()
+	err := serv.ListenAndServe()
+	if err != nil {
+		fmt.Println(http.StatusInternalServerError)
+	}
 }

@@ -1,0 +1,46 @@
+name: ci_go
+
+on:
+    pull_request:
+        branches: [main]
+
+jobs:
+    tests:
+        name: Tests
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Check out code
+              uses: actions/checkout@v4
+
+            - name: Set up Go
+              uses: actions/setup-go@v5
+              with:
+                go-version: "1.26.0"
+
+            - name: Run Gosec Security Scanner
+              uses: securego/gosec@master
+              with:
+                args: ./...
+
+    style_check:
+        name: Style check
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Check out code
+              uses: actions/checkout@v4
+
+            - name: Set up Go
+              uses: actions/setup-go@v5
+              with:
+                go-version: "latest"
+
+            - name: Check formatting
+              run: test -z $(go fmt ./...)
+
+            - name: Run staticcheck
+              uses: dominikh/staticcheck-action@v1.2.0
+              with: 
+                version: "2022.1.1"
+                install-go: false

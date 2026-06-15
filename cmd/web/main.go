@@ -1,4 +1,4 @@
-package sujitrening
+package main
 
 import (
 	"net/http"

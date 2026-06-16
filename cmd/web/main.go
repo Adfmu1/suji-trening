@@ -5,9 +5,15 @@ import (
 	"net/http"
 	"os"
 	"time"
+
+	"github.com/joho/godotenv"
 )
 
 func main() {
+	err := godotenv.Load()
+	if err != nil {
+		fmt.Println(http.StatusInternalServerError, err)
+	}
 	port := os.Getenv("PORT")
 
 	mux := http.NewServeMux()
@@ -15,11 +21,15 @@ func main() {
 	serv := &http.Server{
 		Addr:              port,
 		Handler:           mux,
-		ReadHeaderTimeout: time.Duration(time.Duration.Seconds(5)),
+		ReadHeaderTimeout: time.Second * 5,
 	}
 
-	err := serv.ListenAndServe()
+	mux.HandleFunc("/", rootHandler)
+
+	fmt.Println("Listening on a ", port)
+
+	err = serv.ListenAndServe()
 	if err != nil {
-		fmt.Println(http.StatusInternalServerError)
+		fmt.Println(http.StatusInternalServerError, err)
 	}
 }

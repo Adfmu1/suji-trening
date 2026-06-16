@@ -16,15 +16,13 @@ func main() {
 	}
 	port := os.Getenv("PORT")
 
-	mux := http.NewServeMux()
+	mux := routes()
 
 	serv := &http.Server{
 		Addr:              port,
 		Handler:           mux,
 		ReadHeaderTimeout: time.Second * 5,
 	}
-
-	mux.HandleFunc("/", rootHandler)
 
 	fmt.Println("Listening on a ", port)
 

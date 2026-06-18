@@ -1,13 +1,22 @@
 package main
 
 import (
+	"database/sql"
 	"fmt"
 	"net/http"
 	"os"
 	"time"
 
+	"github.com/Adfmu1/suji-trening/internal/database"
 	"github.com/joho/godotenv"
+	_ "github.com/lib/pq"
 )
+
+type application struct {
+	Database *database.Queries
+}
+
+var app application
 
 func main() {
 	err := godotenv.Load()
@@ -15,6 +24,16 @@ func main() {
 		fmt.Println(http.StatusInternalServerError, err)
 	}
 	port := os.Getenv("PORT")
+	dbURL := os.Getenv("DB_URL")
+	dbConn, err := sql.Open("postgres", dbURL)
+	if err != nil {
+		fmt.Println("an error occured while opening database")
+		fmt.Println(err)
+		return
+	}
+	defer dbConn.Close()
+
+	app.Database = database.New(dbConn)
 
 	mux := routes()
 

@@ -7,6 +7,23 @@ import (
 	"net/http"
 )
 
+type AdvancedResponseWriter struct {
+	http.ResponseWriter
+	statusCode int
+	bytes      int
+}
+
+func (arw *AdvancedResponseWriter) WriteHeader(code int) {
+	arw.statusCode = code
+	arw.ResponseWriter.WriteHeader(code)
+}
+
+func (arw *AdvancedResponseWriter) Write(b []byte) (int, error) {
+	n, err := arw.ResponseWriter.Write(b)
+	arw.bytes += n
+	return n, err
+}
+
 func respondWithError(w http.ResponseWriter, code int, msg string) {
 	errDat := struct {
 		ErrMsg string `json:"error"`

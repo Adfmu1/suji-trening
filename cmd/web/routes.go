@@ -11,5 +11,5 @@ func routes() http.Handler {
 	mux.HandleFunc("GET /api/healthz", healthHandler)
 	mux.HandleFunc("POST /api/register", app.createUserHandler)
 
-	return mux
+	return app.loggingMiddleware(mux)
 }

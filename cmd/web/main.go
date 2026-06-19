@@ -3,6 +3,7 @@ package main
 import (
 	"database/sql"
 	"fmt"
+	"log/slog"
 	"net/http"
 	"os"
 	"time"
@@ -14,6 +15,7 @@ import (
 
 type application struct {
 	Database *database.Queries
+	Logger   *slog.Logger
 }
 
 var app application
@@ -25,6 +27,7 @@ func main() {
 	}
 	port := os.Getenv("PORT")
 	dbURL := os.Getenv("DB_URL")
+	env := os.Getenv("DB_URL")
 	dbConn, err := sql.Open("postgres", dbURL)
 	if err != nil {
 		fmt.Println("an error occured while opening database")
@@ -34,6 +37,7 @@ func main() {
 	defer dbConn.Close()
 
 	app.Database = database.New(dbConn)
+	app.Logger = newLogger(env)
 
 	mux := routes()
 

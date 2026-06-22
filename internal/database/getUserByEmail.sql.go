@@ -10,20 +10,26 @@ import (
 )
 
 const getUserByEmail = `-- name: GetUserByEmail :one
-SELECT UserID, FirstName, Email 
+SELECT UserID, FirstName, Email, HashedPassword
 FROM users 
 WHERE Email = $1
 `
 
 type GetUserByEmailRow struct {
-	Userid    string `json:"userid"`
-	Firstname string `json:"firstname"`
-	Email     string `json:"email"`
+	Userid         string `json:"userid"`
+	Firstname      string `json:"firstname"`
+	Email          string `json:"email"`
+	Hashedpassword string `json:"hashedpassword"`
 }
 
 func (q *Queries) GetUserByEmail(ctx context.Context, email string) (GetUserByEmailRow, error) {
 	row := q.db.QueryRowContext(ctx, getUserByEmail, email)
 	var i GetUserByEmailRow
-	err := row.Scan(&i.Userid, &i.Firstname, &i.Email)
+	err := row.Scan(
+		&i.Userid,
+		&i.Firstname,
+		&i.Email,
+		&i.Hashedpassword,
+	)
 	return i, err
 }

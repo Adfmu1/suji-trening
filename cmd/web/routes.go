@@ -10,6 +10,7 @@ func routes() http.Handler {
 	mux.HandleFunc("GET /app", rootHandler)
 	mux.HandleFunc("GET /api/healthz", healthHandler)
 	mux.HandleFunc("POST /api/register", app.createUserHandler)
+	mux.HandleFunc("POST /api/deleteuser", app.deleteUserHandler)
 
 	return app.loggingMiddleware(mux)
 }

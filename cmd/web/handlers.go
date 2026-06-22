@@ -56,3 +56,46 @@ func (app application) createUserHandler(w http.ResponseWriter, r *http.Request)
 
 	respondWithJson(w, http.StatusOK, resp)
 }
+
+func (app application) deleteUserHandler(w http.ResponseWriter, r *http.Request) {
+	params := struct {
+		Email    string `json:"email"`
+		Password string `json:"password"`
+	}{}
+
+	err := json.NewDecoder(r.Body).Decode(&params)
+	defer r.Body.Close()
+
+	if err != nil {
+		respondWithError(w, http.StatusBadRequest, "Failed to decode request body")
+		return
+	}
+	if !checkIfEmailInDB(r, params.Email) {
+		respondWithError(w, http.StatusConflict, "User with this email doesn't exists")
+		return
+	}
+
+	dbUsr, err := app.Database.GetUserByEmail(r.Context(), params.Email)
+
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, "Internal error")
+		return
+	}
+
+	if !authentication.CheckHashPassword(params.Password, dbUsr.Hashedpassword) {
+		respondWithError(w, http.StatusUnauthorized, "Wrong password")
+		return
+	}
+
+	err = app.Database.DeleteUser(r.Context(), database.DeleteUserParams{
+		Email:          params.Email,
+		Hashedpassword: dbUsr.Hashedpassword,
+	})
+
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, "Failed to delete user")
+		return
+	}
+
+	respondWithJson(w, http.StatusOK, struct{}{})
+}

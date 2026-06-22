@@ -4,9 +4,15 @@
 
 package database
 
+import (
+	"time"
+)
+
 type User struct {
-	Userid         string `json:"userid"`
-	Firstname      string `json:"firstname"`
-	Email          string `json:"email"`
-	Hashedpassword string `json:"hashedpassword"`
+	Userid         string    `json:"userid"`
+	Firstname      string    `json:"firstname"`
+	Email          string    `json:"email"`
+	Hashedpassword string    `json:"hashedpassword"`
+	Createdat      time.Time `json:"createdat"`
+	Lastedit       time.Time `json:"lastedit"`
 }
